@@ -1,23 +1,26 @@
-import React, { useEffect, useState, useRef, useLayoutEffect, useCallback } from 'react';
-import Draggable from 'react-draggable';
-import core from 'core';
-import FormFieldEditPopup from './FormFieldEditPopup';
-import FormFieldEditSignaturePopup from './FormFieldEditSignaturePopup';
-import { useSelector, useDispatch, shallowEqual } from 'react-redux';
 import actions from 'actions';
-import selectors from 'selectors';
 import classNames from 'classnames';
-import useOnClickOutside from 'hooks/useOnClickOutside';
+import core from 'core';
 import { getAnnotationPopupPositionBasedOn } from 'helpers/getPopupPosition';
+import useOnClickOutside from 'hooks/useOnClickOutside';
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import Draggable from 'react-draggable';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import selectors from 'selectors';
+import useMedia from '../../hooks/useMedia';
 import useOnFormFieldAnnotationAddedOrSelected from '../../hooks/useOnFormFieldAnnotationAddedOrSelected';
 import DataElementWrapper from '../DataElementWrapper';
-import useMedia from '../../hooks/useMedia';
+import FormFieldEditPopup from './FormFieldEditPopup';
 import './FormFieldEditPopup.scss';
+import FormFieldEditSignaturePopup from './FormFieldEditSignaturePopup';
 
 function FormFieldEditPopupContainer() {
   const formFieldCreationManager = core.getFormFieldCreationManager();
+  const UI = window?.instance?.UI;
+  const customOptions = UI?.getCustomData();
+
   const fieldLabels = formFieldCreationManager.getFieldLabels();
-  const [fieldName, setFieldName] = useState('');
+  const [fieldName, setFieldName] = React.useState('');
   const [fieldValue, setFieldValue] = useState('');
   const [isReadOnly, setReadOnly] = useState(false);
   const [isMultiLine, setMultiLine] = useState(false);
@@ -31,13 +34,34 @@ function FormFieldEditPopupContainer() {
   const [indicatorText, setIndicatorText] = useState('');
   const popupRef = useRef();
 
-  const [isOpen] = useSelector((state) => [selectors.isElementOpen(state, 'formFieldEditPopup')], shallowEqual);
+  const [isOpen] = useSelector(state => [selectors.isElementOpen(state, 'formFieldEditPopup')], shallowEqual);
 
   const dispatch = useDispatch();
 
   useOnClickOutside(popupRef, () => {
     closeAndReset();
+    const currentAnnotation = formFieldAnnotation;
+    removeUnnamedAnnotations(currentAnnotation);
+
   });
+
+  function removeUnnamedAnnotations(currentAnnotation) {
+    const annotation = currentAnnotation?.Hi;
+    let signatureName = '';
+    if (annotation) {
+      for (const key in annotation) {
+        if (Object.hasOwnProperty.call(annotation, key)) {
+          const element = annotation[key];
+          if (key === 'trn-form-field-name') {
+            signatureName = element;
+          }
+        }
+      }
+    }
+    if (signatureName === '') {
+      core.deleteAnnotations([currentAnnotation]);
+    }
+  }
 
   function closeAndReset() {
     dispatch(actions.closeElement('formFieldEditPopup'));
@@ -86,7 +110,7 @@ function FormFieldEditPopupContainer() {
 
     if (isOpen) {
       setPopupPosition();
-      setFieldName(formFieldCreationManager.getFieldName(formFieldAnnotation));
+      // setFieldName(formFieldCreationManager.getFieldName(formFieldAnnotation));
       setFieldValue(formFieldCreationManager.getFieldValue(formFieldAnnotation));
       setReadOnly(formFieldCreationManager.getFieldFlag(formFieldAnnotation, fieldLabels.READ_ONLY));
       setMultiLine(formFieldCreationManager.getFieldFlag(formFieldAnnotation, fieldLabels.MULTI_LINE));
@@ -103,14 +127,21 @@ function FormFieldEditPopupContainer() {
     }
   }, [isOpen]);
 
-  const onFieldNameChange = useCallback((name) => {
+  useEffect(() => {
+    if (formFieldCreationManager, formFieldAnnotation) {
+      const validatedResponse = formFieldCreationManager.setFieldName(formFieldAnnotation, "");
+      setIsValid(validatedResponse.isValid);
+    }
+  }, [formFieldAnnotation, formFieldCreationManager]);
+
+  const onFieldNameChange = useCallback(name => {
     const validatedResponse = formFieldCreationManager.setFieldName(formFieldAnnotation, name);
     setIsValid(validatedResponse.isValid);
     mapValidationResponseToTranslation(validatedResponse);
     setFieldName(name);
   }, [formFieldAnnotation]);
 
-  const mapValidationResponseToTranslation = (validationResponse) => {
+  const mapValidationResponseToTranslation = validationResponse => {
     const { errorType } = validationResponse;
     let translationKey = '';
 
@@ -126,41 +157,41 @@ function FormFieldEditPopupContainer() {
     setValidationMessage(translationKey);
   };
 
-  const onFieldValueChange = useCallback((value) => {
+  const onFieldValueChange = useCallback(value => {
     setFieldValue(value);
     formFieldCreationManager.setFieldValue(formFieldAnnotation, value);
   }, [formFieldAnnotation]);
 
-  const onReadOnlyChange = useCallback((isReadOnly) => {
+  const onReadOnlyChange = useCallback(isReadOnly => {
     setReadOnly(isReadOnly);
     formFieldCreationManager.setFieldFlag(formFieldAnnotation, fieldLabels.READ_ONLY, isReadOnly);
   }, [formFieldAnnotation]);
 
-  const onMultiLineChange = useCallback((isMultiLine) => {
+  const onMultiLineChange = useCallback(isMultiLine => {
     setMultiLine(isMultiLine);
     formFieldCreationManager.setFieldFlag(formFieldAnnotation, fieldLabels.MULTI_LINE, isMultiLine);
   }, [formFieldAnnotation]);
 
-  const onRequiredChange = useCallback((isRequired) => {
+  const onRequiredChange = useCallback(isRequired => {
     setIsRequired(isRequired);
     formFieldCreationManager.setFieldFlag(formFieldAnnotation, fieldLabels.REQUIRED, isRequired);
   }, [formFieldAnnotation]);
 
-  const onMultiSelectChange = useCallback((isMultiSelect) => {
+  const onMultiSelectChange = useCallback(isMultiSelect => {
     setIsMultiSelect(isMultiSelect);
     formFieldCreationManager.setFieldFlag(formFieldAnnotation, fieldLabels.MULTI_SELECT, isMultiSelect);
   }, [formFieldAnnotation]);
 
-  const onFieldOptionsChange = useCallback((options) => {
+  const onFieldOptionsChange = useCallback(options => {
     formFieldCreationManager.setFieldOptions(formFieldAnnotation, options);
   }, [formFieldAnnotation]);
 
-  const onShowFieldIndicatorChange = useCallback((showIndicator) => {
+  const onShowFieldIndicatorChange = useCallback(showIndicator => {
     setShowIndicator(showIndicator);
     formFieldCreationManager.setShowIndicator(formFieldAnnotation, showIndicator);
   }, [formFieldAnnotation]);
 
-  const onFieldIndicatorTextChange = useCallback((indicatorText) => {
+  const onFieldIndicatorTextChange = useCallback(indicatorText => {
     setIndicatorText(indicatorText);
     formFieldCreationManager.setIndicatorText(formFieldAnnotation, indicatorText);
   }, [formFieldAnnotation]);
@@ -177,7 +208,7 @@ function FormFieldEditPopupContainer() {
     closeAndReset();
   }, [fieldName, radioButtonGroups]);
 
-  const redrawAnnotation = useCallback((annotation) => {
+  const redrawAnnotation = useCallback(annotation => {
     core.getAnnotationManager().drawAnnotationsFromList([annotation]);
   }, []);
 
@@ -189,12 +220,12 @@ function FormFieldEditPopupContainer() {
     return core.getPageWidth(core.getCurrentPage());
   }, []);
 
-  const onSignatureOptionChange = useCallback((signatureOption) => {
+  const onSignatureOptionChange = useCallback(signatureOption => {
     const { value } = signatureOption;
     formFieldCreationManager.setSignatureOption(formFieldAnnotation, value);
   }, [formFieldAnnotation]);
 
-  const getSignatureOption = useCallback((formFieldPlaceHolder) => {
+  const getSignatureOption = useCallback(formFieldPlaceHolder => {
     return formFieldCreationManager.getSignatureOption(formFieldPlaceHolder);
   }, []);
 
@@ -204,7 +235,7 @@ function FormFieldEditPopupContainer() {
       onChange: onFieldNameChange,
       value: fieldName,
       required: true,
-      type: 'text',
+      type: 'select',
       focus: true,
     },
     VALUE: {
@@ -337,6 +368,7 @@ function FormFieldEditPopupContainer() {
       onSignatureOptionChange={onSignatureOptionChange}
       getSignatureOptionHandler={getSignatureOption}
       indicator={indicator}
+      customOptions={customOptions}
     />
   );
 

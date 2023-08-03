@@ -76,7 +76,7 @@
     "react/jsx-closing-bracket-location": 2,
     "react/jsx-curly-spacing": 2,
     "react/jsx-boolean-value": 2,
-    "react/prop-types": 2,
+    "react/prop-types": "off",
     "react-hooks/rules-of-hooks": 2,
     "react-hooks/exhaustive-deps": 1,
     "react/sort-comp": 0,

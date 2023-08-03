@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
+/* eslint-disable react/react-in-jsx-scope */
+
+import { Choice, Input } from '@pdftron/webviewer-react-toolkit';
 import classNames from 'classnames';
 import Button from 'components/Button';
-import { useTranslation } from 'react-i18next';
-import { Choice, Input } from '@pdftron/webviewer-react-toolkit';
-import FormFieldPopupDimensionsInput from '../FormFieldPopupDimensionsInput';
-import FormFieldEditPopupIndicator from '../FormFieldEditPopupIndicator';
-import SignatureOptionsDropdown from './SignatureOptionsDropdown';
 import HorizontalDivider from 'components/HorizontalDivider';
+import React from 'react';
+// import core from 'core';
+import { useTranslation } from 'react-i18next';
+import FormFieldEditPopupIndicator from '../FormFieldEditPopupIndicator';
+import FormFieldPopupDimensionsInput from '../FormFieldPopupDimensionsInput';
+import SignatureOptionsDropdown from './SignatureOptionsDropdown';
 
 import '../FormFieldEditPopup.scss';
+import SignatureNameDropdown from './SignatureNameDropdown';
+
+const toJson = string => {
+  try {
+    return JSON.parse(string);
+  } catch (error) {
+    return {};
+  }
+};
 
 const FormFieldEditSignaturePopup = ({
   fields,
@@ -23,6 +35,7 @@ const FormFieldEditSignaturePopup = ({
   onSignatureOptionChange,
   getSignatureOptionHandler,
   indicator,
+  customOptions
 }) => {
   const { t } = useTranslation();
   const className = classNames({
@@ -30,12 +43,15 @@ const FormFieldEditSignaturePopup = ({
     FormFieldEditPopup: true,
   });
 
-  const [width, setWidth] = useState((annotation.Width).toFixed(0));
-  const [height, setHeight] = useState((annotation.Height).toFixed(0));
+  const _customOptions = toJson(customOptions);
+  const total_users = _customOptions?.total_users;
 
-  const [initialWidth] = useState((annotation.Width).toFixed(0));
-  const [initialHeight] = useState((annotation.Height).toFixed(0));
-  const [indicatorPlaceholder, setIndicatorPlaceholder] = useState(t(`formField.formFieldPopup.indicatorPlaceHolders.SignatureFormField.${getSignatureOptionHandler(annotation)}`));
+  const [width, setWidth] = React.useState((annotation.Width).toFixed(0));
+  const [height, setHeight] = React.useState((annotation.Height).toFixed(0));
+
+  const [initialWidth] = React.useState((annotation.Width).toFixed(0));
+  const [initialHeight] = React.useState((annotation.Height).toFixed(0));
+  const [indicatorPlaceholder, setIndicatorPlaceholder] = React.useState(t(`formField.formFieldPopup.indicatorPlaceHolders.SignatureFormField.${getSignatureOptionHandler(annotation)}`));
 
 
   function onWidthChange(width) {
@@ -84,7 +100,7 @@ const FormFieldEditSignaturePopup = ({
     return (
       <Input
         type="text"
-        onChange={(event) => field.onChange(event.target.value)}
+        onChange={event => field.onChange(event.target.value)}
         value={field.value}
         fillWidth="false"
         messageText={field.required && !isValid ? t(validationMessage) : ''}
@@ -94,7 +110,7 @@ const FormFieldEditSignaturePopup = ({
     );
   }
 
-  const onOptionChange = (option) => {
+  const onOptionChange = option => {
     onSignatureOptionChange(option);
     const { value } = option;
     setIndicatorPlaceholder(t(`formField.formFieldPopup.indicatorPlaceHolders.SignatureFormField.${value}`));
@@ -104,22 +120,17 @@ const FormFieldEditSignaturePopup = ({
     <div className={className}>
       <SignatureOptionsDropdown onChangeHandler={onOptionChange} initialOption={getSignatureOptionHandler(annotation)} />
       <div className="fields-container">
-        {fields.map((field) => (
-          <div className="field-input" key={field.label}>
-            <label>
-              {t(field.label)}{field.required ? '*' : ''}:
-            </label>
-            {renderTextInput(field)}
-          </div>
-        ))}
+        {fields.map(field => {
+          return SignatureNameDropdown(field, total_users, isValid, validationMessage);
+        })}
       </div>
       <div className="field-flags-container">
         <span className="field-flags-title">{t('formField.formFieldPopup.flags')}</span>
-        {flags.map((flag) => (
+        {flags.map(flag => (
           <Choice
             key={flag.label}
             checked={flag.isChecked}
-            onChange={(event) => flag.onChange(event.target.checked)}
+            onChange={event => flag.onChange(event.target.checked)}
             label={t(flag.label)}
           />
         ))}
@@ -155,3 +166,5 @@ const FormFieldEditSignaturePopup = ({
 };
 
 export default FormFieldEditSignaturePopup;
+
+

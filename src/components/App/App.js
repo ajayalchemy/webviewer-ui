@@ -1,84 +1,84 @@
-import { hot } from 'react-hot-loader/root';
-import React, { useEffect } from 'react';
-import classNames from 'classnames';
-import { useDispatch, useSelector, useStore } from 'react-redux';
-import PropTypes from 'prop-types';
-import selectors from 'selectors';
-import core from 'core';
 import actions from 'actions';
+import classNames from 'classnames';
+import core from 'core';
+import PropTypes from 'prop-types';
+import React, { useEffect } from 'react';
+import { hot } from 'react-hot-loader/root';
+import { useDispatch, useSelector, useStore } from 'react-redux';
+import selectors from 'selectors';
 
 import Accessibility from 'components/Accessibility';
-import Header from 'components/Header';
-import ViewControlsOverlay from 'components/ViewControlsOverlay';
-import MenuOverlay from 'components/MenuOverlay';
 import AnnotationContentOverlay from 'components/AnnotationContentOverlay';
-import DocumentContainer from 'components/DocumentContainer';
-import LeftPanel from 'components/LeftPanel';
-import NotesPanel from 'components/NotesPanel';
-import SearchPanel from 'components/SearchPanel';
-import RightPanel from 'components/RightPanel';
 import AnnotationPopup from 'components/AnnotationPopup';
-import TextPopup from 'components/TextPopup';
-import ContextMenuPopup from 'components/ContextMenuPopup';
-import RichTextPopup from 'components/RichTextPopup';
-import SignatureModal from 'components/SignatureModal';
-import PrintModal from 'components/PrintModal';
-import LoadingModal from 'components/LoadingModal';
-import ErrorModal from 'components/ErrorModal';
-import WarningModal from 'components/WarningModal';
-import SignatureValidationModal from 'components/SignatureValidationModal';
-import PasswordModal from 'components/PasswordModal';
-import ProgressModal from 'components/ProgressModal';
-import LinkModal from 'components/LinkModal';
-import ContentEditModal from 'components/ContentEditModal';
-import FilterAnnotModal from 'components/FilterAnnotModal';
-import FilePickerHandler from 'components/FilePickerHandler';
-import CopyTextHandler from 'components/CopyTextHandler';
-import PrintHandler from 'components/PrintHandler';
-import FontHandler from 'components/FontHandler';
-import ZoomOverlay from 'components/ZoomOverlay';
-import CreateStampModal from 'components/CreateStampModal';
-import PageReplacementModal from 'components/PageReplacementModal';
-import CustomModal from 'components/CustomModal';
-import Model3DModal from 'components/Model3DModal';
-import FormFieldEditPopup from 'components/FormFieldEditPopup';
+import AudioPlaybackPopup from 'components/AudioPlaybackPopup';
+import BottomHeader from 'components/BottomHeader';
 import ColorPickerModal from 'components/ColorPickerModal';
+import ContentEditLinkModal from 'components/ContentEditLinkModal';
+import ContentEditModal from 'components/ContentEditModal';
+import ContextMenuPopup from 'components/ContextMenuPopup';
+import CopyTextHandler from 'components/CopyTextHandler';
+import CreateStampModal from 'components/CreateStampModal';
+import CustomElement from 'components/CustomElement';
+import CustomModal from 'components/CustomModal';
+import DocumentContainer from 'components/DocumentContainer';
+import DocumentCropPopup from 'components/DocumentCropPopup';
+import ErrorModal from 'components/ErrorModal';
+import FilePickerHandler from 'components/FilePickerHandler';
+import FilterAnnotModal from 'components/FilterAnnotModal';
+import FontHandler from 'components/FontHandler';
+import FormFieldEditPopup from 'components/FormFieldEditPopup';
+import FormFieldIndicatorContainer from 'components/FormFieldIndicator';
+import GenericOutlinesPanel from 'components/GenericOutlinesPanel';
+import Header from 'components/Header';
+import InsertPageModal from 'components/InsertPageModal';
+import LeftHeader from 'components/LeftHeader';
+import LeftPanel from 'components/LeftPanel';
+import LeftPanelOverlayContainer from 'components/LeftPanelOverlay';
+import LinkModal from 'components/LinkModal';
+import LoadingModal from 'components/LoadingModal';
+import MenuOverlay from 'components/MenuOverlay';
+import Model3DModal from 'components/Model3DModal';
+import MultiTabEmptyPage from 'components/MultiTabEmptyPage';
+import MultiViewer from 'components/MultiViewer';
+import ComparePanel from 'components/MultiViewer/ComparePanel';
+import NotesPanel from 'components/NotesPanel';
+import OpenFileModal from 'components/OpenFileModal';
 import PageManipulationOverlay from 'components/PageManipulationOverlay';
 import PageRedactionModal from 'components/PageRedactionModal';
-import RedactionPanel from 'components/RedactionPanel';
-import TextEditingPanel from 'components/TextEditingPanel';
-import Wv3dPropertiesPanel from 'components/Wv3dPropertiesPanel';
-import AudioPlaybackPopup from 'components/AudioPlaybackPopup';
-import ScaleModal from 'components/ScaleModal';
-import DocumentCropPopup from 'components/DocumentCropPopup';
-import LeftPanelOverlayContainer from 'components/LeftPanelOverlay';
-import FormFieldIndicatorContainer from 'components/FormFieldIndicator';
-import ContentEditLinkModal from 'components/ContentEditLinkModal';
-import MultiTabEmptyPage from 'components/MultiTabEmptyPage';
-import OpenFileModal from 'components/OpenFileModal';
-import MultiViewer from 'components/MultiViewer';
-import SettingsModal from 'components/SettingsModal';
-import ComparePanel from 'components/MultiViewer/ComparePanel';
-import SaveModal from 'components/SaveModal';
-import WatermarkPanel from 'components/WatermarkPanel';
-import InsertPageModal from 'components/InsertPageModal';
-import CustomElement from 'components/CustomElement';
+import PageReplacementModal from 'components/PageReplacementModal';
 import Panel from 'components/Panel';
-import LeftHeader from 'components/LeftHeader';
+import PasswordModal from 'components/PasswordModal';
+import PrintHandler from 'components/PrintHandler';
+import PrintModal from 'components/PrintModal';
+import ProgressModal from 'components/ProgressModal';
+import RedactionPanel from 'components/RedactionPanel';
+import RichTextPopup from 'components/RichTextPopup';
 import RightHeader from 'components/RightHeader';
-import BottomHeader from 'components/BottomHeader';
+import RightPanel from 'components/RightPanel';
+import SaveModal from 'components/SaveModal';
+import ScaleModal from 'components/ScaleModal';
+import SearchPanel from 'components/SearchPanel';
+import SettingsModal from 'components/SettingsModal';
+import SignatureModal from 'components/SignatureModal';
+import SignatureValidationModal from 'components/SignatureValidationModal';
+import TextEditingPanel from 'components/TextEditingPanel';
+import TextPopup from 'components/TextPopup';
 import TopHeader from 'components/TopHeader';
-import GenericOutlinesPanel from 'components/GenericOutlinesPanel';
-import loadDocument from 'helpers/loadDocument';
-import getHashParameters from 'helpers/getHashParameters';
-import fireEvent from 'helpers/fireEvent';
-import { prepareMultiTab } from 'helpers/TabManager';
-import hotkeysManager from 'helpers/hotkeysManager';
-import setDefaultDisabledElements from 'helpers/setDefaultDisabledElements';
+import ViewControlsOverlay from 'components/ViewControlsOverlay';
+import WarningModal from 'components/WarningModal';
+import WatermarkPanel from 'components/WatermarkPanel';
+import Wv3dPropertiesPanel from 'components/Wv3dPropertiesPanel';
+import ZoomOverlay from 'components/ZoomOverlay';
 import Events from 'constants/events';
 import overlays from 'constants/overlays';
-import setLanguage from 'src/apis/setLanguage';
 import { panelNames } from 'constants/panel';
+import fireEvent from 'helpers/fireEvent';
+import getHashParameters from 'helpers/getHashParameters';
+import hotkeysManager from 'helpers/hotkeysManager';
+import loadDocument from 'helpers/loadDocument';
+import setDefaultDisabledElements from 'helpers/setDefaultDisabledElements';
+import { prepareMultiTab } from 'helpers/TabManager';
+import setLanguage from 'src/apis/setLanguage';
 
 import './App.scss';
 
@@ -94,7 +94,7 @@ const App = ({ removeEventHandlers }) => {
   const dispatch = useDispatch();
   let timeoutReturn;
 
-  const [isInDesktopOnlyMode, isMultiViewerMode, customFlxPanels] = useSelector((state) => [
+  const [isInDesktopOnlyMode, isMultiViewerMode, customFlxPanels] = useSelector(state => [
     selectors.isInDesktopOnlyMode(state),
     selectors.isMultiViewerMode(state),
     selectors.getCustomFlxPanels(state),
@@ -229,35 +229,35 @@ const App = ({ removeEventHandlers }) => {
           <LeftHeader />
           <LeftPanel />
           {panels}
-          {!isMultiViewerMode && <DocumentContainer/>}
-          {window?.ResizeObserver && <MultiViewer/>}
-          <RightHeader/>
-          <RightPanel dataElement="searchPanel" onResize={(width) => dispatch(actions.setSearchPanelWidth(width))}>
+          {!isMultiViewerMode && <DocumentContainer />}
+          {window?.ResizeObserver && <MultiViewer />}
+          <RightHeader />
+          <RightPanel dataElement="searchPanel" onResize={width => dispatch(actions.setSearchPanelWidth(width))}>
             <SearchPanel />
           </RightPanel>
-          <RightPanel dataElement="notesPanel" onResize={(width) => dispatch(actions.setNotesPanelWidth(width))}>
+          <RightPanel dataElement="notesPanel" onResize={width => dispatch(actions.setNotesPanelWidth(width))}>
             <NotesPanel />
           </RightPanel>
-          <RightPanel dataElement="redactionPanel" onResize={(width) => dispatch(actions.setRedactionPanelWidth(width))}>
+          <RightPanel dataElement="redactionPanel" onResize={width => dispatch(actions.setRedactionPanelWidth(width))}>
             <RedactionPanel />
           </RightPanel>
-          <RightPanel dataElement="watermarkPanel" onResize={(width) => dispatch(actions.setWatermarkPanelWidth(width))}>
+          <RightPanel dataElement="watermarkPanel" onResize={width => dispatch(actions.setWatermarkPanelWidth(width))}>
             <WatermarkPanel />
           </RightPanel>
           <RightPanel
             dataElement="wv3dPropertiesPanel"
-            onResize={(width) => dispatch(actions.setWv3dPropertiesPanelWidth(width))}
+            onResize={width => dispatch(actions.setWv3dPropertiesPanelWidth(width))}
           >
             <Wv3dPropertiesPanel />
           </RightPanel>
           <MultiTabEmptyPage />
           <RightPanel
             dataElement="textEditingPanel"
-            onResize={(width) => dispatch(actions.setTextEditingPanelWidth(width))}
+            onResize={width => dispatch(actions.setTextEditingPanelWidth(width))}
           >
             <TextEditingPanel />
           </RightPanel>
-          {isMultiViewerMode && <RightPanel dataElement="comparePanel" onResize={(width) => dispatch(actions.setComparePanelWidth(width))}>
+          {isMultiViewerMode && <RightPanel dataElement="comparePanel" onResize={width => dispatch(actions.setComparePanelWidth(width))}>
             <ComparePanel />
           </RightPanel>}
           <BottomHeader />

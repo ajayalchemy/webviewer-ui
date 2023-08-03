@@ -34,23 +34,25 @@ app.get('/', (req, res) => {
   res.sendFile(path.resolve(__dirname, 'src/index.html'));
 });
 
-const sampleURL = encodeURIComponent(JSON.stringify('https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf'));
+const fileUrl = 'https://pdftron.s3.amazonaws.com/downloads/pl/demo-annotated.pdf';
+const sampleURL = encodeURIComponent(JSON.stringify(fileUrl));
+const customOptions = encodeURIComponent(JSON.stringify({ total_users: 2 }));
 
 app.get('/sample-url', (req, res) => {
 
   res.redirect(
-    `/#d=${sampleURL}&a=1`,
+    `/#d=${sampleURL}&a=1&custom=${customOptions}`,
   );
 });
 
-app.listen(3000, '0.0.0.0', err => {
+app.listen(3003, '0.0.0.0', err => {
   if (err) {
     console.error(err);
   } else {
     // eslint-disable-next-line
-    console.info(`Listening at localhost:3000 (http://${ip.address()}:3000)`);
+    console.info(`Listening at localhost:3003 (http://${ip.address()}:3003)`);
     open(
-      `http://localhost:3000/#d=${sampleURL}&a=1`,
+      `http://localhost:3003/#d=${sampleURL}&a=1&custom=${customOptions}`,
     );
   }
 });
