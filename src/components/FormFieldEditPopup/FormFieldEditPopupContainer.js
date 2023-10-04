@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import actions from 'actions';
 import classNames from 'classnames';
 import core from 'core';
@@ -7,6 +8,7 @@ import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from
 import Draggable from 'react-draggable';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 import selectors from 'selectors';
+import createSignatureFieldName, { getCountOfFields, replaceBracketedText } from '../../helpers/createSignatureFieldName';
 import useMedia from '../../hooks/useMedia';
 import useOnFormFieldAnnotationAddedOrSelected from '../../hooks/useOnFormFieldAnnotationAddedOrSelected';
 import DataElementWrapper from '../DataElementWrapper';
@@ -16,6 +18,7 @@ import FormFieldEditSignaturePopup from './FormFieldEditSignaturePopup';
 
 function FormFieldEditPopupContainer() {
   const formFieldCreationManager = core.getFormFieldCreationManager();
+  const annotationManager = core.getAnnotationManager();
   const UI = window?.instance?.UI;
   const customOptions = UI?.getCustomData();
 
@@ -134,11 +137,36 @@ function FormFieldEditPopupContainer() {
     }
   }, [formFieldAnnotation, formFieldCreationManager]);
 
-  const onFieldNameChange = useCallback(name => {
-    const validatedResponse = formFieldCreationManager.setFieldName(formFieldAnnotation, name);
-    setIsValid(validatedResponse.isValid);
-    mapValidationResponseToTranslation(validatedResponse);
-    setFieldName(name);
+  const onFieldNameChange = useCallback(async name => {
+    const fieldName = name.split('.')[0] || null;
+    if (fieldName === "signature") {
+      try {
+        let _name = name;
+        const fieldManager = annotationManager.getFieldManager();
+        const signatureFields = fieldManager?.Qb?.signature?.Kd || [];
+        const signatureFieldsArray = signatureFields.map(field => field?.Ld);
+        const trimmedFields = signatureFieldsArray.map(field => replaceBracketedText(field));
+        const __name = replaceBracketedText(_name);
+        const count = getCountOfFields(trimmedFields, __name) || 0;
+        if (count > 0) {
+          _name = createSignatureFieldName(_name, count);
+        }
+
+        const validatedResponse = formFieldCreationManager.setFieldName(formFieldAnnotation, _name);
+        setIsValid(validatedResponse.isValid);
+        setFieldName(_name);
+        mapValidationResponseToTranslation(validatedResponse);
+        formFieldCreationManager.applyFormFields();
+      } catch (e) {
+        setIsValid(false);
+      }
+    } else {
+      const validatedResponse = formFieldCreationManager.setFieldName(formFieldAnnotation, name);
+      setIsValid(validatedResponse.isValid);
+      setFieldName(name);
+      mapValidationResponseToTranslation(validatedResponse);
+    }
+
   }, [formFieldAnnotation]);
 
   const mapValidationResponseToTranslation = validationResponse => {
